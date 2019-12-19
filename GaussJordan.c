@@ -31,7 +31,7 @@ void desalloc_matrix(t_matrice* mat)
 }
 
 //this method is not tested yet
-void GaussJordanElimination (int **A[][], int *b[]){
+void GaussJordanElimination (double **A[][], double *b[]){
 	int i,lignePivot,aux;
 	int *T[], *T1[], *T2[];//Vecteur temporaire
 	
