@@ -2,18 +2,10 @@
 #define GAUSSJORDAN_H
 
 
-typedef struct{
-	int nlign;
-	int ncolo;
-	int **tab;
-}matrix;
-
-
-matrix *alloc_matrice(int nlig,int ncol);
-void aff_matrice(matrix *mat);
-void saisir_matrice(matrix *mat);
-void desalloc_matrice(matrix *mat);
-matrix produit(matrix *mat1,matrix *mat2);
+double **alloc_matrice(int nlig,int ncol);
+void aff_matrice(double **mat);
+void saisir_matrix(double **mat);
+void desalloc_matrix(double **mat);
 
 void Init_Matrix();
 void Gauss_Jordan();
