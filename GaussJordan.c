@@ -31,45 +31,52 @@ void desalloc_matrix(t_matrice* mat)
 }
 
 //this method is not tested yet
-void GaussJordanElimination (double **A[][], double *b[]){
+void GaussJordanElimination (double **A[][], double *b[])
+{
 	int i,lignePivot,aux;
 	int *T[], *T1[], *T2[];//Vecteur temporaire
 	
 	//************************
 	
-	for(int j=1; j<n; j++)
+	for(int k=1; k<n; k++)
 	{
-		i = j;
-		if(A[i][j]!=0)
+		//i = j;
+		if(A[k][k]!=0)
 		{
-			lignePivot = i;
+			lignePivot = k;
 		}
 		else
 		{
-			i+=1;
+			i = k+1;
 			
-			while(A[i][j]==0 && i<=n)
+			while(A[i][k]==0)
 			{
 				i+=1;
 			}
 			lignePivot = i;
 		}
 		//Permutation de la k-Ã¨me ligne avec la ligne de pivot de a matrice A
-		//for(int i=0;i<n;i++)
-		//{
-			T2[k]=A[k][k];
-			A[k][k]=A[lignePivot][k];
-			A[lignePivot][k]=T2[k];
-		//}
+		for(int i=0;i<n;i++)
+		{
+			T2[i]=A[i][i];
+			A[i][i]=A[lignePivot][i];
+			A[lignePivot][i]=T2[i];
+		}
 		//Permutaion de la k-Ã¨me ligne avec la ligne de pivot du vecteur b
-		aux=b[k];
-		b[k]=b[lignePivot];
-		b[lignePivot]=aux;
-		
+		for(int i=0;i<n;i++)
+		{
+			aux=b[i];
+			b[i]=b[lignePivot];
+			b[lignePivot]=aux;
+		}
 		//DIAGONALISATION DE LA MATRICE A
 		
 		//La mise Ã  jours de la matrice A
-		T[k+1]=-A[k][k+1]/A[k][k];
+		for(int i=0;i<n;i++)
+		{
+			T[i+1]=-A[i][i+1]/A[i][i];
+		}
+		
 		for(int i=1;i=<k-1;i++)
 		{
 			A[i,k+1]=A[i][k+1]+T[k+1]*A[i][k];
@@ -78,11 +85,13 @@ void GaussJordanElimination (double **A[][], double *b[]){
 		 //TRANSFORMATION DU VECTEUR b
 		 
 		 //La mise Ã  jours du vecteur b
-		 T1[1]=A[1
-		 aux = b[k];
-		 b[1]=b[1]-T1[1]/A[k,k];
-		 b[k]=aux;		
-		
+		for(int i=1;i<=n;i++)
+		{
+			 T1[i]=A[i][k];
+			 aux = b[k];
+			 b[i]=b[i]-T1[i]/A[k,k];
+			 b[k]=aux;		
+		}
 	}
 	
 }
