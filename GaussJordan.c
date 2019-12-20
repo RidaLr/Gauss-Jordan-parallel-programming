@@ -3,9 +3,7 @@
 #include "GaussJordan.h"
 
 
-void Init_Matrix(matrix mat){
-	
-}
+
 
 double **alloc_matrix(int lig, int col)
 {
