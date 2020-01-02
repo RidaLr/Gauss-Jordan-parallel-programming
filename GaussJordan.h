@@ -1,13 +1,16 @@
 #ifndef GAUSSJORDAN_H
 #define GAUSSJORDAN_H
+#define N 3
 
 
 double **alloc_matrix(int nlig,int ncol);
 void aff_matrice(double **mat);
 void desalloc_matrix(double **mat, int nl);
 void GaussJordanElim(double **A, double *b);
+void GaussJordanElimParallel(double **A, double *b);
 void GaussJordanElimination(double **A, double *b);
 void ResulutionLinearSystem(double **D, double *y);
+void ResulutionLinearSystemParallel(double **D, double *y);
 void affich_sol(double *x, int n);
 void affich_systeme(double **A ,double *b);
 void saisie_mat(double **A);

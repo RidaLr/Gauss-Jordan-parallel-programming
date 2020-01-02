@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 #include "GaussJordan.h"
 #define N 3
 
@@ -26,7 +27,7 @@ void desalloc_matrix(double **mat, int nl)
 	return;
 }
 
-/* Affichage du systÃ¨me */
+/* Affichage du système */
 void affich_systeme(double **A ,double *b)
 {
 	int i , j ;
@@ -34,12 +35,12 @@ void affich_systeme(double **A ,double *b)
 	
 	for(i = 0 ; i < N ; i++)
 	{
-		printf("  [");
+		printf("  (");
 		for(j = 0 ; j < N ; j++)
 		{
 			printf("  %.3f  ",A[i][j]);
 		}
-		printf(" ]    [X%d]   =",i+1);
+		printf(" )    (X%d)   =",i+1);
 		printf("\t%.3f",b[i]);
 		printf("\n\n");
 	}
@@ -72,14 +73,14 @@ void GaussJordanElimination(double **A, double *b){
 			}
 			lignePivot = i;
 		}
-		//Permutation de la k-Ã¨me ligne avec la ligne de pivot de a matrice A
+		//Permutation de la k-ème ligne avec la ligne de pivot de a matrice A
 		for(int i=k;i<N;i++)
 		{
 			T2[i]=A[k][i];
 			A[k][i]=A[lignePivot][i];
 			A[lignePivot][i]=T2[i];
 		}
-		//Permutaion de la k-Ã¨me ligne avec la ligne de pivot du vecteur b
+		//Permutaion de la k-ème ligne avec la ligne de pivot du vecteur b
 		aux=b[k];
 		b[k]=b[lignePivot];
 		b[lignePivot]=aux;
@@ -87,10 +88,10 @@ void GaussJordanElimination(double **A, double *b){
 		//DIAGONALISATION DE LA MATRICE A
 		
 		
-		//La mise Ã  jours de la matrice A
+		//La mise à jours de la matrice A
 		for(int i=k+1;i<N;i++)
 		{
-			printf("La mise Ã  jours de la matrice A\n");
+			printf("La mise à jours de la matrice A\n");
 			T[i]=-A[k][i]/A[k][k];
 		}
 		
@@ -108,7 +109,7 @@ void GaussJordanElimination(double **A, double *b){
 		}
 		//TRANSFORMATION DU VECTEUR b
 		 
-		//La mise Ã  jours du vecteur b
+		//La mise à jours du vecteur b
 		for(int i=0;i<N;i++)
 		{
 			 T1[i]=A[i][k];
@@ -122,7 +123,7 @@ void GaussJordanElimination(double **A, double *b){
 	
 }*/
 
-
+//Sequential version
 void GaussJordanElim(double **A, double *b){
 	int i,lignePivot,aux;
 	double *T;//Vecteur temporaire
@@ -145,14 +146,14 @@ void GaussJordanElim(double **A, double *b){
 			}
 			lignePivot = i;
 		
-			//Permutation de la k-Ã¨me ligne avec la ligne de pivot de a matrice A
+			//Permutation de la k-ème ligne avec la ligne de pivot de a matrice A
 			for(int i=0;i<N;i++)
 			{
 				T[i]=A[k][i];
 				A[k][i]=A[lignePivot][i];
 				A[lignePivot][i]=T[i];
 			}
-			//Permutaion de la k-Ã¨me ligne avec la ligne de pivot du vecteur b
+			//Permutaion de la k-ème ligne avec la ligne de pivot du vecteur b
 			aux=b[k];
 			b[k]=b[lignePivot];
 			b[lignePivot]=aux;
@@ -183,7 +184,69 @@ void GaussJordanElim(double **A, double *b){
 }
 
 
-/* Saisie des Ã©lÃ©ments de la matrice A */
+//Parallel version
+void GaussJordanElimParallel(double **A, double *b){
+	int i,lignePivot,aux;
+	double *T;//A temporary vector
+	
+	T = (double *) malloc (sizeof (double *) * N);
+	//************************
+	
+	for(int k=0; k<N; k++)
+	{
+		if(A[k][k]!=0)
+		{
+			lignePivot = k;
+		}
+		else
+		{
+			i = k+1;
+			while(A[i][k]==0)
+			{
+				i+=1;
+			}
+			lignePivot = i;
+		
+			//Permutation de la k-ème ligne avec la ligne de pivot de a matrice A
+			#pragma omp parallel for
+				for(int i=0;i<N;i++)
+				{
+					T[i]=A[k][i];
+					A[k][i]=A[lignePivot][i];
+					A[lignePivot][i]=T[i];
+				}
+			//Permutaion de la k-ème ligne avec la ligne de pivot du vecteur b
+			aux=b[k];
+			b[k]=b[lignePivot];
+			b[lignePivot]=aux;
+		}
+		//DIAGONALISATION DE LA MATRICE A
+		#pragma omp parallel for
+			for(int i=0;i<N;i++)
+			{
+				T[i]=A[i][k];
+				if(i!=k){
+					for(int j=k+1;j<N;j++)
+					{
+						A[i][j] = A[i][j]-(A[k][j]/A[k][k])*T[i];
+					}
+				}
+			}
+		#pragma omp parallel for
+			for(int i=0;i<N;i++)
+			{
+				T[i]=A[i][k];
+				aux = b[k];
+				b[i] = b[i]-(T[i]/A[k][k])*b[k];
+				b[k] = aux;
+			}
+		affich_systeme(A,b);
+	}
+	
+}
+
+
+/* Saisie des éléments de la matrice A */
 void saisie_mat(double **A)
 { 
      int i , j ;
@@ -200,7 +263,7 @@ void saisie_mat(double **A)
      }
 }
 
-/* Saisie des Ã©lÃ©ments de la matrice B */
+/* Saisie des éléments de la matrice B */
 void saisie_vect(double *b)
 { 
      int i ;
@@ -214,31 +277,53 @@ void saisie_vect(double *b)
      }
 }
 
+//version séquentille
 void ResulutionLinearSystem(double **D, double *y)
 {
 	
-	printf(" ===>Affichage de la solution : \n\n\n");
+	printf(" <========== Show the solution (sequential) ============>\n\n\n");
 	for(int i=0; i<N; i++)
 	{
 		
-		printf("(X%d)   =",i+1);
+		printf("[X%d]   =",i+1);
 		printf("\t%.6f",(y[i] / D[i][i]));
 		printf("\n\n");
 	}
 	
 }
 
+//version parallèle
+void ResulutionLinearSystemParallel(double **D, double *y)
+{
+	
+	printf(" <======= Show the solution with parallelism =========>\n\n\n");
+	#pragma omp parallel for
+		for(int i=0; i<N; i++)
+		{
+			printf("[X%d]   =",i+1);
+			printf("\t%.6f",(y[i] / D[i][i]));
+			printf("\n\n");
+		}
+	
+}
 
 
-/* Affichage de la solution du systÃ¨me */
+/* Show the solution */
 void affich_sol(double *x, int n)
 {
-	printf(" ===>Affichage de la solution : \n\n\n");
+    int i ;
+	printf(" <======= Show the solution ============>\n\n\n");
 	
-	for(int i = 0 ; i < n ; i++)
+	for(i = 0 ; i < n ; i++)
 	{
         printf("[X%d]   =",i+1);
 		printf("\t%.6f",x[i]);
 		printf("\n\n");
 	}
 }
+
+/*TODO @Create a method that get the numbre of threads and return it ( we will use it in all 
+ * 
+ * methods whose use the parallelism
+ * 
+ * **/
