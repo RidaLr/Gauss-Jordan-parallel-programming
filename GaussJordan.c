@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <omp.h>
 #include "GaussJordan.h"
-#define N 3
 
 double **alloc_matrix(int nl, int nc)
 {
@@ -28,15 +27,15 @@ void desalloc_matrix(double **mat, int nl)
 }
 
 /* Affichage du système */
-void affich_systeme(double **A ,double *b)
+void affich_systeme(double **A ,double *b, int size)
 {
 	int i , j ;
 	printf(" ===>Affichage du systeme : \n\n\n");
 	
-	for(i = 0 ; i < N ; i++)
+	for(i = 0 ; i < size ; i++)
 	{
 		printf("  (");
-		for(j = 0 ; j < N ; j++)
+		for(j = 0 ; j < size ; j++)
 		{
 			printf("  %.3f  ",A[i][j]);
 		}
@@ -124,7 +123,9 @@ void GaussJordanElimination(double **A, double *b){
 }*/
 
 //Sequential version
-void GaussJordanElim(double **A, double *b){
+void GaussJordanElim(double **A, double *b, int N)
+{
+
 	int i,lignePivot,aux;
 	double *T;//Vecteur temporaire
 	
@@ -178,76 +179,80 @@ void GaussJordanElim(double **A, double *b){
 			b[i] = b[i]-(T[i]/A[k][k])*b[k];
 			b[k] = aux;
 		}
-		affich_systeme(A,b);
+		affich_systeme(A,b,N);
 	}
 	
 }
 
 
 //Parallel version
-void GaussJordanElimParallel(double **A, double *b){
-	int i,lignePivot,aux;
+void GaussJordanElimParallel(double **A, double *b,int N)
+{
+
+	int i,j,l,lignePivot,aux;
 	double *T;//A temporary vector
 	
 	T = (double *) malloc (sizeof (double *) * N);
 	//************************
 	
-	for(int k=0; k<N; k++)
+	#pragma omp parallel
 	{
-		if(A[k][k]!=0)
+		for(int k=0; k<N; k++)
 		{
-			lignePivot = k;
-		}
-		else
-		{
-			i = k+1;
-			while(A[i][k]==0)
+			if(A[k][k]!=0)
 			{
-				i+=1;
+				lignePivot = k;
 			}
-			lignePivot = i;
-		
-			//Permutation de la k-ème ligne avec la ligne de pivot de a matrice A
-			#pragma omp parallel for
-				for(int i=0;i<N;i++)
-				{
-					T[i]=A[k][i];
-					A[k][i]=A[lignePivot][i];
-					A[lignePivot][i]=T[i];
-				}
-			//Permutaion de la k-ème ligne avec la ligne de pivot du vecteur b
-			aux=b[k];
-			b[k]=b[lignePivot];
-			b[lignePivot]=aux;
-		}
-		//DIAGONALISATION DE LA MATRICE A
-		#pragma omp parallel for
-			for(int i=0;i<N;i++)
+			else
 			{
-				T[i]=A[i][k];
-				if(i!=k){
-					for(int j=k+1;j<N;j++)
+				i = k+1;
+				while(A[i][k]==0)
+				{
+					i+=1;
+				}
+				lignePivot = i;
+			
+				//Permutation de la k-ème ligne avec la ligne de pivot de a matrice A
+				#pragma omp parallel for
+					for(i=0;i<N;i++)
 					{
-						A[i][j] = A[i][j]-(A[k][j]/A[k][k])*T[i];
+						T[i]=A[k][i];
+						A[k][i]=A[lignePivot][i];
+						A[lignePivot][i]=T[i];
+					}
+				//Permutaion de la k-ème ligne avec la ligne de pivot du vecteur b
+				aux=b[k];
+				b[k]=b[lignePivot];
+				b[lignePivot]=aux;
+			}
+			//DIAGONALISATION DE LA MATRICE A
+			#pragma omp for private(l,j) nowait schedule(static)
+				for(l=0;l<N;l++)
+				{
+					T[l]=A[l][k];
+					if(l!=k){
+						for(j=k+1;j<N;j++)
+						{
+							A[l][j] = A[l][j]-(A[k][j]/A[k][k])*T[l];
+						}
 					}
 				}
-			}
-		#pragma omp parallel for
-			for(int i=0;i<N;i++)
-			{
-				T[i]=A[i][k];
-				aux = b[k];
-				b[i] = b[i]-(T[i]/A[k][k])*b[k];
-				b[k] = aux;
-			}
-		affich_systeme(A,b);
+			#pragma omp for private(l) nowait
+				for(l=0;l<N;l++)
+				{
+					T[l]=A[l][k];
+					aux = b[k];
+					b[l] = b[l]-(T[l]/A[k][k])*b[k];
+					b[k] = aux;
+				}
+			affich_systeme(A,b,N);
+		}
 	}
-	
 }
 
 
 /* Saisie des éléments de la matrice A */
-void saisie_mat(double **A)
+void saisie_mat(double **A, int N)
 { 
      int i , j ;
      printf(" ===>Saisie de la matrice : \n\n\n");
@@ -264,7 +269,7 @@ void saisie_mat(double **A)
 }
 
 /* Saisie des éléments de la matrice B */
-void saisie_vect(double *b)
+void saisie_vect(double *b, int N)
 { 
      int i ;
      printf(" ===>Saisie du vecteur : \n\n\n");
@@ -278,7 +283,7 @@ void saisie_vect(double *b)
 }
 
 //version séquentille
-void ResulutionLinearSystem(double **D, double *y)
+void ResulutionLinearSystem(double **D, double *y, int N)
 {
 	
 	printf(" <========== Show the solution (sequential) ============>\n\n\n");
@@ -293,18 +298,20 @@ void ResulutionLinearSystem(double **D, double *y)
 }
 
 //version parallèle
-void ResulutionLinearSystemParallel(double **D, double *y)
+void ResulutionLinearSystemParallel(double **D, double *y, int N)
 {
 	
 	printf(" <======= Show the solution with parallelism =========>\n\n\n");
-	#pragma omp parallel for
-		for(int i=0; i<N; i++)
-		{
-			printf("[X%d]   =",i+1);
-			printf("\t%.6f",(y[i] / D[i][i]));
-			printf("\n\n");
-		}
-	
+	#pragma omp parallel
+	{
+		 #pragma omp for schedule(static) nowait
+			for(int i=0; i<N; i++)
+			{
+				printf("[X%d]   =",i+1);
+				printf("\t%.6f",(y[i] / D[i][i]));
+				printf("\n\n");
+			}
+	}
 }
 
 
@@ -322,8 +329,29 @@ void affich_sol(double *x, int n)
 	}
 }
 
-/*TODO @Create a method that get the numbre of threads and return it ( we will use it in all 
- * 
- * methods whose use the parallelism
- * 
- * **/
+int getThreadsNbr()
+{
+	int nbThreads=0;
+	
+	printf("Please enter the numbre of thread you want to create !\n");
+	scanf("%d",&nbThreads);
+	
+	return nbThreads;
+}
+/*
+double **GenerateRandomMatrix(int size)
+{
+	
+	
+}*/
+
+double *GenerateRandomVector(int size)
+{
+	double *vector = malloc(sizeof(double)*size);
+	
+	for(int i = 0; i < size; i++)
+	{
+		//vector[i] = rand
+	}
+	return vector;
+}
