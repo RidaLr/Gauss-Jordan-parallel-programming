@@ -179,7 +179,15 @@ void GaussJordanElim(double **A, double *b, int N)
 			b[i] = b[i]-(T[i]/A[k][k])*b[k];
 			b[k] = aux;
 		}
-		affich_systeme(A,b,N);
+		if(A[N-1][N-1]==0)
+		{
+			printf("\n La matrice est singulière!!\n");
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			affich_systeme(A,b,N);
+		}
 	}
 	
 }
@@ -245,7 +253,15 @@ void GaussJordanElimParallel(double **A, double *b,int N)
 					b[l] = b[l]-(T[l]/A[k][k])*b[k];
 					b[k] = aux;
 				}
-			affich_systeme(A,b,N);
+			if(A[N-1][N-1]==0)
+			{
+				printf("\n La matrice est singulière!!\n");
+				exit(EXIT_FAILURE);
+			}
+			else
+			{
+				affich_systeme(A,b,N);
+			}
 		}
 	}
 }
