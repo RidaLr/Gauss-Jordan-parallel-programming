@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <omp.h>
 #include "GaussJordan.h"
+#include <time.h>
 
 double **alloc_matrix(int nl, int nc)
 {
@@ -284,6 +285,24 @@ void saisie_mat(double **A, int N)
      }
 }
 
+void saisie_mat_alea(double **A, int N)
+{ 
+     int i , j ,nb_alea=0;
+     srand(time(NULL));
+     printf(" ===>Saisie de la matrice aleatoirement: \n\n\n");
+     
+     for(i = 0 ; i < N ; i++)
+     {
+        for( j = 0 ; j < N ; j++)
+        {
+		   nb_alea=rand();
+           A[i][j]=nb_alea;
+           printf("  A[%d][%d] : %d",i+1,j+1,nb_alea);
+        }
+     printf("\n");
+     }
+}
+
 /* Saisie des éléments de la matrice B */
 void saisie_vect(double *b, int N)
 { 
@@ -294,6 +313,21 @@ void saisie_vect(double *b, int N)
      {
         printf("  b[%d] : ",i+1);
         scanf("%lf",&b[i]);
+        printf("\n");
+     }
+}
+
+void saisie_vect_alea(double *b, int N)
+{ 
+     int i ,nb_alea=0;
+     srand(time(NULL));
+     printf(" ===>Saisie du vecteur aleatoirement : \n\n\n");
+     
+     for(i = 0 ; i < N ; i++)
+     {
+		nb_alea=rand();
+		b[i]=nb_alea;
+        printf("  b[%d] : %d ",i+1,nb_alea);
         printf("\n");
      }
 }
