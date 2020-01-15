@@ -273,9 +273,9 @@ void ResulutionLinearSystem(double **D, double *y, int N)
 }
 
 //version parallèle
-void ResulutionLinearSystemParallel(double **D, double *y, int N)
+void ResulutionLinearSystemParallel(double **D, double *y, int N, int Nb_threads)
 {
-	
+	omp_set_num_threads(Nb_threads);
 	printf(" <======= Show the solution with parallelism =========>\n\n\n");
 	#pragma omp parallel
 	{
