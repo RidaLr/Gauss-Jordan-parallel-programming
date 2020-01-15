@@ -6,7 +6,7 @@ double **alloc_matrix(int nlig,int ncol);
 void aff_matrice(double **mat);
 void desalloc_matrix(double **mat, int nl);
 void GaussJordanElim(double **A, double *b,int N);
-void GaussJordanElimParallel(double **A, double *b,int N);
+void GaussJordanElimParallel(double **A, double *b, int N, int Nb_threads);
 void GaussJordanElimination(double **A, double *b);
 void ResulutionLinearSystem(double **D, double *y, int N);
 void ResulutionLinearSystemParallel(double **D, double *y, int N);
