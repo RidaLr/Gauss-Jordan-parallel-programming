@@ -132,7 +132,7 @@ int main()
 					}
 					if(choise==6)
 					{
-						GaussJordanElimParallel(A, b, n);
+						GaussJordanElimParallel(A, b, n, N_threads);
 						ResulutionLinearSystemParallel(A, b, n);
 					}
 					
