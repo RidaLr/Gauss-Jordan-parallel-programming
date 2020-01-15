@@ -119,7 +119,7 @@ void GaussJordanElim(double **A, double *b, int N)
 
 
 //Parallel version
-void GaussJordanElimParallel(double **A, double *b,int N)
+void GaussJordanElimParallel(double **A, double *b, int N, int Nb_threads)
 {
 
 	int i,j,l,lignePivot,aux;
@@ -127,6 +127,7 @@ void GaussJordanElimParallel(double **A, double *b,int N)
 	
 	T = (double *) malloc (sizeof (double *) * N);
 	//************************
+	omp_set_num_threads(Nb_threads);
 	
 	#pragma omp parallel
 	{
