@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <omp.h>
 #include "GaussJordan.h"
-#include <time.h>
 
+
+//Allocation dynamique de la mtrice 
 double **alloc_matrix(int nl, int nc)
 {
 	double **mat=(double**)malloc(nl*sizeof(double *));
@@ -15,6 +13,7 @@ double **alloc_matrix(int nl, int nc)
 	return mat;
 }
 
+//desallocation de la matrice
 void desalloc_matrix(double **mat, int nl)
 {
 	for(int i=0;i<nl;i++)
@@ -27,27 +26,28 @@ void desalloc_matrix(double **mat, int nl)
 	return;
 }
 
-/* Show the system */
+/* Affichage du systÃ¨me */
 void affich_systeme(double **A ,double *b, int size)
 {
 	int i , j ;
-	printf(" <======== Show the system =========>\n\n");
+	printf(" <<<<<<<<<<<<<<<<< Affichage du systeme >>>>>>>>>>>>>>>>>> \n\n\n");
 	
 	for(i = 0 ; i < size ; i++)
 	{
-		printf("  [");
+		printf("  (");
 		for(j = 0 ; j < size ; j++)
 		{
-			printf("  %f  ",A[i][j]);
+			printf("  %.3f  ",A[i][j]);
 		}
-		printf(" ]    [X%d]   =",i+1);
-		printf("\t %f",b[i]);
+		printf(" )    (X%d)   =",i+1);
+		printf("\t%.3f",b[i]);
 		printf("\n\n");
 	}
 }
 
 
-//Sequential version
+
+//La version sequentiel de la mÃ©thode d'elimination de gauss jordan
 void GaussJordanElim(double **A, double *b, int N)
 {
 
@@ -72,14 +72,14 @@ void GaussJordanElim(double **A, double *b, int N)
 			}
 			lignePivot = i;
 		
-			//Permutation de la k-ème ligne avec la ligne de pivot de a matrice A
+			//Permutation de la k-Ã¨me ligne avec la ligne de pivot de a matrice A
 			for(int i=0;i<N;i++)
 			{
 				T[i]=A[k][i];
 				A[k][i]=A[lignePivot][i];
 				A[lignePivot][i]=T[i];
 			}
-			//Permutaion de la k-ème ligne avec la ligne de pivot du vecteur b
+			//Permutaion de la k-Ã¨me ligne avec la ligne de pivot du vecteur b
 			aux=b[k];
 			b[k]=b[lignePivot];
 			b[lignePivot]=aux;
@@ -106,20 +106,20 @@ void GaussJordanElim(double **A, double *b, int N)
 		}
 		if(A[N-1][N-1]==0)
 		{
-			printf("\n La matrice est singulière!!\n");
+			printf("\n <<<<<<<<<<<<<<<<La matrice est singuliÃ¨re>>>>>>>>>>>>>> \n");
 			exit(EXIT_FAILURE);
 		}
 		else
 		{
-			affich_systeme(A,b,N);
+			affich_systeme(A,b,N);//Affichage du rÃ©sultat
 		}
 	}
 	
 }
 
 
-//Parallel version
-void GaussJordanElimParallel(double **A, double *b, int N, int Nb_threads)
+//Le version Parallel de la methode d'elimination e Gauss Jordan
+void GaussJordanElimParallel(double **A, double *b, int N, int N_threads)
 {
 
 	int i,j,l,lignePivot,aux;
@@ -127,7 +127,7 @@ void GaussJordanElimParallel(double **A, double *b, int N, int Nb_threads)
 	
 	T = (double *) malloc (sizeof (double *) * N);
 	//************************
-	omp_set_num_threads(Nb_threads);
+	omp_set_num_threads(N_threads);
 	
 	#pragma omp parallel
 	{
@@ -146,15 +146,15 @@ void GaussJordanElimParallel(double **A, double *b, int N, int Nb_threads)
 				}
 				lignePivot = i;
 			
-				//Permutation de la k-ème ligne avec la ligne de pivot de a matrice A
-				#pragma omp parallel for
+				//Permutation de la k-Ã¨me ligne avec la ligne de pivot de a matrice A
+				#pragma omp for private(i) nowait schedule(static)
 					for(i=0;i<N;i++)
 					{
 						T[i]=A[k][i];
 						A[k][i]=A[lignePivot][i];
 						A[lignePivot][i]=T[i];
 					}
-				//Permutaion de la k-ème ligne avec la ligne de pivot du vecteur b
+				//Permutaion de la k-Ã¨me ligne avec la ligne de pivot du vecteur b
 				aux=b[k];
 				b[k]=b[lignePivot];
 				b[lignePivot]=aux;
@@ -171,7 +171,7 @@ void GaussJordanElimParallel(double **A, double *b, int N, int Nb_threads)
 						}
 					}
 				}
-			#pragma omp for private(l) nowait
+			#pragma omp for private(l) nowait schedule(static)
 				for(l=0;l<N;l++)
 				{
 					T[l]=A[l][k];
@@ -181,27 +181,27 @@ void GaussJordanElimParallel(double **A, double *b, int N, int Nb_threads)
 				}
 			if(A[N-1][N-1]==0)
 			{
-				printf("\n La matrice est singulière!!\n");
+				printf("\n La matrice est singuliÃ¨re!!\n");
 				exit(EXIT_FAILURE);
 			}
 			else
 			{
-				affich_systeme(A,b,N);
+				affich_systeme(A,b,N);//Affichage du resultat final
 			}
 		}
 	}
 }
 
 
-/* Saisie des éléments de la matrice A */
+/* Saisie des Ã©lÃ©ments de la matrice A */
 void saisie_mat(double **A, int N)
 { 
-     int i , j ;
-     printf(" ===>Saisie de la matrice : \n\n\n");
+  
+     printf(" <<<<<<<<<<<<< Saisie de la matrice >>>>>>>>>>>>>>>> \n\n\n");
      
-     for(i = 0 ; i < N ; i++)
+     for(int i = 0 ; i < N ; i++)
      {
-        for( j = 0 ; j < N ; j++)
+        for(int j = 0 ; j < N ; j++)
         {
            printf("  A[%d][%d] : ",i+1,j+1);
            scanf("%lf",&A[i][j]);
@@ -210,31 +210,13 @@ void saisie_mat(double **A, int N)
      }
 }
 
-void saisie_mat_alea(double **A, int N)
-{ 
-     int i , j ,nb_alea=0;
-     srand(time(NULL));
-     printf(" ===>Saisie de la matrice aleatoirement: \n\n\n");
-     
-     for(i = 0 ; i < N ; i++)
-     {
-        for( j = 0 ; j < N ; j++)
-        {
-		   nb_alea=rand();
-           A[i][j]=nb_alea;
-           printf("  A[%d][%d] : %d",i+1,j+1,nb_alea);
-        }
-     printf("\n");
-     }
-}
-
-/* Saisie des éléments de la matrice B */
+// Saisie du vecteur b
 void saisie_vect(double *b, int N)
 { 
-     int i ;
-     printf(" ===>Saisie du vecteur : \n\n\n");
      
-     for(i = 0 ; i < N ; i++)
+     printf(" <<<<<<<<<<<<< Saisie du vecteur >>>>>>>>>>>>>> \n\n\n");
+     
+     for(int i = 0 ; i < N ; i++)
      {
         printf("  b[%d] : ",i+1);
         scanf("%lf",&b[i]);
@@ -242,61 +224,46 @@ void saisie_vect(double *b, int N)
      }
 }
 
-void saisie_vect_alea(double *b, int N)
-{ 
-     int i ,nb_alea=0;
-     srand(time(NULL));
-     printf(" ===>Saisie du vecteur aleatoirement : \n\n\n");
-     
-     for(i = 0 ; i < N ; i++)
-     {
-		nb_alea=rand();
-		b[i]=nb_alea;
-        printf("  b[%d] : %d ",i+1,nb_alea);
-        printf("\n");
-     }
-}
-
-//version séquentille
+//version sÃ©quentille
 void ResulutionLinearSystem(double **D, double *y, int N)
 {
 	
-	printf(" <========== Show the solution (sequential) ============>\n\n\n");
+	printf(" <<<<<<<<<<<< Show the solution (sequential) >>>>>>>>>>>>>>>\n\n");
 	for(int i=0; i<N; i++)
 	{
 		
 		printf("[X%d]   =",i+1);
-		printf("\t%.6f",(y[i] / D[i][i]));
+		printf("\t%f",(y[i] / D[i][i]));
 		printf("\n\n");
 	}
 	
 }
 
-//version parallèle
-void ResulutionLinearSystemParallel(double **D, double *y, int N, int Nb_threads)
+//version parallÃ¨le
+void ResulutionLinearSystemParallel(double **D, double *y, int N, int N_threads)
 {
-	omp_set_num_threads(Nb_threads);
-	printf(" <======= Show the solution with parallelism =========>\n\n\n");
+	omp_set_num_threads(N_threads);
+	printf(" <<<<<<<<<<< Show the solution with parallelism >>>>>>>>>>>>>>>>\n\n\n");
 	#pragma omp parallel
 	{
 		 #pragma omp for schedule(static) nowait
 			for(int i=0; i<N; i++)
 			{
 				printf("[X%d]   =",i+1);
-				printf("\t%.6f",(y[i] / D[i][i]));
+				printf("\t%f",(y[i] / D[i][i]));
 				printf("\n\n");
 			}
 	}
 }
 
 
-/* Show the solution */
+/* Affichage du resultat final */
 void affich_sol(double *x, int n)
 {
-    int i ;
-	printf(" <======= Show the solution ============>\n\n\n");
+    
+	printf(" <<<<<<<<< Show the solution >>>>>>>>>>>>>>\n\n\n");
 	
-	for(i = 0 ; i < n ; i++)
+	for(int i = 0 ; i < n ; i++)
 	{
         printf("[X%d]   =",i+1);
 		printf("\t%.6f",x[i]);
@@ -304,29 +271,56 @@ void affich_sol(double *x, int n)
 	}
 }
 
-int getThreadsNbr()
-{
-	int nbThreads=0;
-	
-	printf("Please enter the numbre of thread you want to create !\n");
-	scanf("%d",&nbThreads);
-	
-	return nbThreads;
-}
-/*
-double **GenerateRandomMatrix(int size)
-{
-	
-	
-}*/
-
-double *GenerateRandomVector(int size)
-{
-	double *vector = malloc(sizeof(double)*size);
-	
-	for(int i = 0; i < size; i++)
+//Saisie de la matrice aleatoirement 
+void saisie_mat_alea(double **A, int N)
+{ 
+     
+     double nb_alea=0.0;
+     srand(time(NULL));
+     printf(" <<<<<<<<<Saisie de la matrice aleatoirement>>>>>>>>>> \n\n\n");
+     
+     for(int i = 0 ; i < N ; i++)
+     {
+        for(int j = 0 ; j < N ; j++)
+        {
+			if(i==j || (i>=1 && j==i-1) || (i>=0 && j==i+1) )
+			{
+			   nb_alea=(double)rand()/RAND_MAX*100.0-0.0;
+			   A[i][j]=nb_alea;
+			//	   printf("  A[%d][%d] : %d",i+1,j+1,nb_alea);
+		   }
+		   else
+		   {
+			   A[i][j]=0.0;
+		   }
+        }
+     }
+     
+     for(int i = 0 ; i < N ; i++)
 	{
-		//vector[i] = rand
+		printf("  (");
+		for(int j = 0 ; j < N ; j++)
+		{
+			printf("  %.3f  ",A[i][j]);
+		}
+		printf("\n\n");
 	}
-	return vector;
+}
+
+
+//Saisie du vecteur aleatoirement
+void saisie_vect_alea(double *b, int N)
+{ 
+     
+     double nb_alea=0.0;
+     srand(time(NULL));
+     printf(" <<<<<<<<<<<<<Saisie du vecteur aleatoirement>>>>>>>>>> \n\n\n");
+     
+     for(int i = 0 ; i < N ; i++)
+     {
+		nb_alea=(double)rand()/RAND_MAX*100.0-0.0;
+		b[i]=nb_alea;
+       // printf("  b[%d] : %d ",i+1,nb_alea);
+      //  printf("\n");
+     }
 }
