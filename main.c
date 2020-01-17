@@ -11,7 +11,7 @@ int main()
 	double **A = NULL; 
 	double *b = NULL;
 	double *r = NULL;
-	//double time
+	double t0,t1,t2,t3;
 	
 	//Le menu de notre programme 
 	while(choise!=3){
@@ -76,8 +76,11 @@ int main()
 					}
 					if(choise==6)
 					{
+						t0 = clock();
 						GaussJordanElim(A, b, n);
 						ResulutionLinearSystem(A, b, n);
+						t1 = (clock() - t0)/ (double)CLOCKS_PER_SEC;
+						printf("\n Time elapsed %f sec \n\n",t1);
 					}
 					
 				}
@@ -134,8 +137,11 @@ int main()
 					}
 					if(choise==6)
 					{
+						t2 = omp_get_wtime();
 						GaussJordanElimParallel(A, b, n, N_threads);
 						ResulutionLinearSystemParallel(A, b, n, N_threads);
+						t3 = (clock() - t2)/ (double)CLOCKS_PER_SEC;
+						printf("\n Time elapsed %f sec \n\n",t3);
 					}
 					
 				}
