@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "GaussJordan.h"
 
 
@@ -10,6 +11,7 @@ int main()
 	double **A = NULL; 
 	double *b = NULL;
 	double *r = NULL;
+	//double time
 	
 	//Le menu de notre programme 
 	while(choise!=3){
@@ -23,7 +25,7 @@ int main()
         printf(" |  3) Quit.                                                                  |\n");
         printf("  ---------------------------------------------------------------------------- \n");
         printf("  -----------DEVELOPPED BY RIDA LAKSIR & MANOA ANGELO  2019/2020 ISTY--------- \n");
-        printf("Your choice : ");
+        printf("Your choise : ");
         scanf("%d",&choise);
         switch(choise)
         {
@@ -31,15 +33,15 @@ int main()
 				choise=0;
 				while(choise!=7){
 					printf("  --------------------------SEQUENTIAL VERSION-------------------------- \n");
-					printf(" |  1) Enter the size of matrix A and vector b.                        |\n");
+					printf(" |  1) Enter tne size of matrixe A and vector b.                        |\n");
 					printf(" |  2) Create the matrix A using your own values.                       |\n");
-					printf(" |  3) Create the matrix A with a random values.                       |\n");
+					printf(" |  3) Create the matrcix A with a random values.                       |\n");
 					printf(" |  4) Create the vector b using your own values.                       |\n");
-					printf(" |  5) Create the vector v whith a random values.                       |\n");
+					printf(" |  5) Create the vector b with a random values.                        |\n");
 					printf(" |  6) Show results.                                                    |\n");
 					printf(" |  7) Quit.                                                            |\n");
 					printf(" ----------------------------------------------------------------------- \n");
-					printf("Your choice : ");
+					printf("Your choise : ");
 					scanf("%d",&choise);
 					
 					if(choise==1)
@@ -89,15 +91,15 @@ int main()
 				choise=0;
 				while(choise!=7){
 					printf("  -----------------------PARALLEL VERSION------------------------------- \n");
-					printf(" |  1) Enter the size of matrix A and vector b.                        |\n");
+					printf(" |  1) Enter tne size of matrixe A and vector b.                        |\n");
 					printf(" |  2) Create the matrix A using your own values.                       |\n");
-					printf(" |  3) Create the matrix A with a random values.                       |\n");
+					printf(" |  3) Create the matrcix A with a random values.                       |\n");
 					printf(" |  4) Create the vector b using your own values.                       |\n");
 					printf(" |  5) Create the vector v whith a random values.                       |\n");
 					printf(" |  6) Show results.                                                    |\n");
 					printf(" |  7) Quit.                                                            |\n");
 					printf(" ----------------------------------------------------------------------- \n");
-					printf("Your choice : ");
+					printf("Your choise : ");
 					scanf("%d",&choise);
 					
 					if(choise==1)
