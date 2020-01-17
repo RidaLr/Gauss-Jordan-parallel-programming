@@ -8,7 +8,3 @@ To compile you can use this commande line : <h3>gcc GaussJordan.h GaussJordan.c 
 <h2>Execute</h2><br>
 To execute you can use this commande line : <h3>./main</h3>
 and  TADAAA you got it (it's very nice right?).
-
-
-Matrices de test
-
