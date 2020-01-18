@@ -1,17 +1,35 @@
-CC=gcc
-CFLAGS=-Wall -Werror -fopenmp
-FICHIERO= GaussJordan.o main.o
+SHELL = /bin/sh
+prefix = /usr
+CC = gcc
+C++ = g++
+GLUT_LIBS =
+X_LIBADD =  -lXmu -lXext -lXi -lX11
+INCLUDES = -Iinclude -I$(prefix)/include  
+LDADD =
+CFLAGS = -g -O2 -Wall -fopenmp -fomit-frame-pointer -ffast-math -fexpensive-optimizations -D_REENTRANT
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
 
-default: clean GaussJordan main compile 
-	rm -f *.o
-		
-compile: 
-	$(CC) $(CFLAGS) $(FICHIERO) -o 
+.SUFFIXES:
+.SUFFIXES: .cpp .c .o 
+
+.c.o:
+	$(COMPILE) -c $<
+
+.cpp.o:
+	$(C++) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) -c $<
+
 	
-%: %.c
-	$(CC) $(CFLAGS) $@.c -o $@.o
+all: main
+
+CLI_OBJECTS=main.o GaussJordan.o
+
+main: $(CLI_OBJECTS)
+	$(LINK) $(CLI_OBJECTS) $(LDADD) $(LIBS)
+	rm -f *.o
+	clear
+	./main
 
 clean:
 	clear
-	rm -f *.o
-	rm -f exemple
+	-rm -f *.o $(PROGRAMS)
