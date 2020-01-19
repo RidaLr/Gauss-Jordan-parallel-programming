@@ -140,8 +140,10 @@ int main()
 						t2 = omp_get_wtime();
 						GaussJordanElimParallel(A, b, n, N_threads);
 						ResulutionLinearSystemParallel(A, b, n, N_threads);
-						t3 = (clock() - t2)/ (double)CLOCKS_PER_SEC;
+						t3 = omp_get_wtime()-t2;
 						printf("\n Time elapsed %f sec \n\n",t3);
+						printf("charge de thread : %f \n",(t3/N_threads));
+						printf("charge de processeur : %f \n",(t3/omp_get_num_procs()));
 					}
 					
 				}

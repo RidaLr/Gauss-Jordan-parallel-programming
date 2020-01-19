@@ -109,10 +109,11 @@ void GaussJordanElim(double **A, double *b, int N)
 			printf("\n <<<<<<<<<<<<<<<<La matrice est singuliÃ¨re>>>>>>>>>>>>>> \n");
 			exit(EXIT_FAILURE);
 		}
+		/*
 		else
 		{
 			affich_systeme(A,b,N);//Affichage du rÃ©sultat
-		}
+		}*/
 	}
 	
 }
@@ -184,10 +185,11 @@ void GaussJordanElimParallel(double **A, double *b, int N, int N_threads)
 				printf("\n La matrice est singuliÃ¨re!!\n");
 				exit(EXIT_FAILURE);
 			}
+			/*
 			else
 			{
 				affich_systeme(A,b,N);//Affichage du resultat final
-			}
+			}*/
 		}
 	}
 }
