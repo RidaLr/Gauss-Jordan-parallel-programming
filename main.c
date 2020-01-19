@@ -1,3 +1,6 @@
+/*
+-----------DEVELOPPED BY RIDA LAKSIR & MANOA ANGELO  2019/2020 ISTY---------
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
