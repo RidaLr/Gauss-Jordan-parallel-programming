@@ -1,3 +1,7 @@
+/*
+-----------DEVELOPPED BY RIDA LAKSIR & MANOA ANGELO  2019/2020 ISTY---------
+*/
+
 #ifndef GAUSSJORDAN_H
 #define GAUSSJORDAN_H
 #include <stdio.h>
