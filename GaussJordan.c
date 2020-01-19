@@ -1,3 +1,7 @@
+/*
+-----------DEVELOPPED BY RIDA LAKSIR & MANOA ANGELO  2019/2020 ISTY---------
+*/
+
 #include "GaussJordan.h"
 
 
