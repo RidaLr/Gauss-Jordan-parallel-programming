@@ -5,7 +5,7 @@
 #include "GaussJordan.h"
 
 
-//Allocation dynamique de la mtrice 
+//Allocation dynamique de la matrice 
 double **alloc_matrix(int nl, int nc)
 {
 	double **mat=(double**)malloc(nl*sizeof(double *));
@@ -30,7 +30,7 @@ void desalloc_matrix(double **mat, int nl)
 	return;
 }
 
-/* Affichage du systÃ¨me */
+/* Affichage du systeme */
 void affich_systeme(double **A ,double *b, int size)
 {
 	int i , j ;
@@ -51,7 +51,7 @@ void affich_systeme(double **A ,double *b, int size)
 
 
 
-//La version sequentiel de la mÃ©thode d'elimination de gauss jordan
+//La version sequentiel de la methode d'elimination de gauss jordan
 void GaussJordanElim(double **A, double *b, int N)
 {
 
@@ -76,14 +76,14 @@ void GaussJordanElim(double **A, double *b, int N)
 			}
 			lignePivot = i;
 		
-			//Permutation de la k-Ã¨me ligne avec la ligne de pivot de a matrice A
+			//Permutation de la k-eme ligne avec la ligne de pivot de a matrice A
 			for(int i=0;i<N;i++)
 			{
 				T[i]=A[k][i];
 				A[k][i]=A[lignePivot][i];
 				A[lignePivot][i]=T[i];
 			}
-			//Permutaion de la k-Ã¨me ligne avec la ligne de pivot du vecteur b
+			//Permutaion de la k-eme ligne avec la ligne de pivot du vecteur b
 			aux=b[k];
 			b[k]=b[lignePivot];
 			b[lignePivot]=aux;
@@ -116,7 +116,7 @@ void GaussJordanElim(double **A, double *b, int N)
 		/*
 		else
 		{
-			affich_systeme(A,b,N);//Affichage du rÃ©sultat
+			affich_systeme(A,b,N);//Affichage du resultat
 		}*/
 	}
 	
